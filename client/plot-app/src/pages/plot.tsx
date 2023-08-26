@@ -14,6 +14,7 @@ export default function Plot(): JSX.Element {
     labels: [],
     datasets: [],
   });
+  const [tableData, setTableData] = useState<DataEntry[]>([]);
 
   const chartRef = useRef<Chart | null>(null);
 
@@ -22,7 +23,7 @@ export default function Plot(): JSX.Element {
       try {
         const response = await fetch("http://localhost:8000/plots/get/"); // Replace with your API URL
         const data: DataEntry[] = await response.json();
-  
+        console.log(data);
         const xCoordinates = data.map(entry => entry.x);
         const yCoordinates = data.map(entry => entry.y);
 
@@ -38,10 +39,11 @@ export default function Plot(): JSX.Element {
             },
           ],
         });
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
+        setTableData(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
     }
+  }
 
     fetchData();
   }, []);
@@ -80,6 +82,31 @@ export default function Plot(): JSX.Element {
           </div>
         </div>
       </div>
+
+
+      <div className="mt-4">
+            <h3 className="text-white font-semibold mb-2">Table of Data</h3>
+            <table className="table-auto">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2">ID</th>
+                  <th className="px-4 py-2">X Value</th>
+                  <th className="px-4 py-2">Y Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tableData.map((entry) => (
+                  <tr key={entry.id}>
+                    <td className="border px-4 py-2">{entry.id}</td>
+                    <td className="border px-4 py-2">{entry.x}</td>
+                    <td className="border px-4 py-2">{entry.y}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+      
+   
     </>
   );
 }
